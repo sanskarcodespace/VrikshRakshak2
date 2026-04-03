@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 
 export function GraphCard({ 
   title, 
@@ -11,7 +12,7 @@ export function GraphCard({
   title: string; 
   description?: string; 
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }) {
   return (
     <Card className={cn("overflow-hidden", className)}>

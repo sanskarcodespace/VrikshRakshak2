@@ -24,7 +24,7 @@ export default function NotificationsPage() {
 
       <div className="space-y-4 max-w-3xl">
         {notifications.map((n, i) => (
-          <NotificationCard key={i} {...n} />
+          <NotificationCard key={i} {...n} type={n.type as "info" | "success" | "warning"} />
         ))}
       </div>
     </DashboardContainer>
