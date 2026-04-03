@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/Badge";
 import { TrendingUp, AlertTriangle, Users, Target, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGsapReveal } from "@/hooks/useGsap";
+import { MortalityAnalytics } from "./MortalityAnalytics";
 
 const survivalData = [
   { month: "Jan", rate: 85, predicted: 82 },
@@ -161,31 +162,34 @@ export function AnalyticsDashboard() {
         </div>
       </Card>
 
-      {/* Risk Grid (Simulated Heatmap) */}
-      <Card className="p-8 glass border-white/10 space-y-6 lg:col-span-1">
-        <div className="space-y-1">
-           <Badge variant="outline" className="glass border-rose-500/20 text-rose-500">HAZARD_INDEX</Badge>
-           <h3 className="text-2xl font-bold tracking-tight">Environmental Stress</h3>
-        </div>
-        <div className="grid grid-cols-4 gap-2">
-           {Array.from({ length: 16 }).map((_, i) => (
-             <div 
-               key={i} 
-               className={cn(
-                 "aspect-square rounded-lg transition-all hover:scale-110 cursor-pointer overflow-hidden relative",
-                 i === 5 || i === 10 ? "bg-rose-500 shadow-glow-rose" : 
-                 i % 3 === 0 ? "bg-amber-500/40" : "bg-white/5"
-               )}
-             >
-                {i === 5 && <div className="absolute inset-0 bg-white/20 animate-pulse" />}
-             </div>
-           ))}
-        </div>
-        <div className="flex items-center gap-3 text-rose-500/80">
-           <AlertTriangle size={16} />
-           <p className="text-[10px] font-bold uppercase tracking-widest leading-tight">Sectors 5 and 10 flagged for extreme thermal stress.</p>
-        </div>
+      <Card className="p-8 glass border-white/10 space-y-6 lg:col-span-1 animate-reveal">
+         <div className="space-y-1">
+            <Badge variant="outline" className="glass border-rose-500/20 text-rose-500">HAZARD_INDEX</Badge>
+            <h3 className="text-2xl font-bold tracking-tight">Environmental Stress</h3>
+         </div>
+         <div className="grid grid-cols-4 gap-2">
+            {Array.from({ length: 16 }).map((_, i) => (
+              <div 
+                key={i} 
+                className={cn(
+                  "aspect-square rounded-lg transition-all hover:scale-110 cursor-pointer overflow-hidden relative",
+                  i === 5 || i === 10 ? "bg-rose-500 shadow-glow-rose" : 
+                  i % 3 === 0 ? "bg-amber-500/40" : "bg-white/5"
+                )}
+              >
+                 {i === 5 && <div className="absolute inset-0 bg-white/20 animate-pulse" />}
+              </div>
+            ))}
+         </div>
+         <div className="flex items-center gap-3 text-rose-500/80">
+            <AlertTriangle size={16} />
+            <p className="text-[10px] font-bold uppercase tracking-widest leading-tight">Sectors 5 and 10 flagged for extreme thermal stress.</p>
+         </div>
       </Card>
+
+      <div className="lg:col-span-3">
+         <MortalityAnalytics />
+      </div>
     </div>
   );
 }

@@ -12,7 +12,9 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  Map as MapIcon,
+  Camera
 } from "lucide-react";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { PageTransition } from "./PageTransition";
@@ -21,11 +23,12 @@ import { Button } from "@/components/ui/Button";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Inspector Map", href: "/map", icon: MapIcon },
+  { name: "Field Upload", href: "/upload", icon: Camera },
   { name: "Trees", href: "/trees", icon: TreePine },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
-  { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
   { name: "Notifications", href: "/notifications", icon: Bell },
-  { name: "Profile", href: "/profile", icon: User },
+  { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 

@@ -21,20 +21,15 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { useNotificationStore } from "@/lib/store/notification-store";
+
 export default function NotificationsPage() {
   const [filter, setFilter] = useState<"all" | "critical" | "warning">("all");
+  const { notifications, markAsRead, clearAll } = useNotificationStore();
 
-  const history = [
-    { id: "1", type: "CRITICAL", title: "Hydration Alert", message: "Specimen T-845 (English Oak) has exceeded its 6-day watering threshold.", timestamp: "2026-04-03T12:00:00Z", category: "Hydration" },
-    { id: "2", type: "WARNING", title: "Growth Anomaly", message: "T-843 showing 15% slower growth than localized average.", timestamp: "2026-04-03T11:00:00Z", category: "Diagnostics" },
-    { id: "3", type: "SUCCESS", title: "Registration Confirmed", message: "Specimen T-842 successfully synchronized with neural grid.", timestamp: "2026-04-02T16:45:00Z", category: "System" },
-    { id: "4", type: "INFO", title: "Sync Complete", message: "Satellite telemetry for Sector 7-A updated successfully.", timestamp: "2026-04-02T09:00:00Z", category: "Telemetry" },
-    { id: "5", type: "CRITICAL", title: "Thermal Shock", message: "Sector 3-B ambient temperature peaked at 42°C. Vulnerable specimens flagged.", timestamp: "2026-04-01T14:30:00Z", category: "Environment" },
-  ];
-
-  const filteredHistory = history.filter(item => {
+  const filteredHistory = notifications.filter(item => {
     if (filter === "all") return true;
-    return item.type.toLowerCase() === filter;
+    return item.type.toLowerCase() === filter.toLowerCase();
   });
 
   return (
@@ -48,7 +43,7 @@ export default function NotificationsPage() {
           </div>
           <div className="flex items-center gap-3">
              <Button variant="outline" className="rounded-2xl glass h-12 gap-2"><Download size={18} /> Export Logs</Button>
-             <Button className="rounded-2xl shadow-glow h-12 px-6">Clear All Archive</Button>
+             <Button className="rounded-2xl shadow-glow h-12 px-6" onClick={clearAll}>Clear All Archive</Button>
           </div>
         </div>
 
@@ -76,8 +71,22 @@ export default function NotificationsPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-4">
-           {filteredHistory.map((item) => (
-              <Card key={item.id} className="p-6 glass border-white/5 hover:border-white/10 transition-all flex flex-col md:flex-row md:items-center gap-6 group">
+           {filteredHistory.length === 0 ? (
+             <div className="py-20 text-center space-y-4">
+                <Bell className="text-muted-foreground/20 mx-auto" size={80} />
+                <p className="text-lg font-bold text-muted-foreground">Archive Clear.</p>
+             </div>
+           ) : filteredHistory.map((item) => (
+              <Card 
+                key={item.id} 
+                className={cn(
+                  "p-6 glass border-white/5 hover:border-white/10 transition-all flex flex-col md:flex-row md:items-center gap-6 group relative overflow-hidden",
+                  !item.read && "border-primary/20 bg-primary/10 shadow-glow-sm"
+                )}
+                onClick={() => markAsRead(item.id)}
+              >
+                 {!item.read && <div className="absolute top-0 left-0 w-1 h-full bg-primary shadow-glow" />}
+                 
                  <div className={cn(
                     "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0",
                     item.type === "CRITICAL" ? "bg-rose-500/10 text-rose-500 shadow-glow-sm" :
@@ -95,6 +104,7 @@ export default function NotificationsPage() {
                        <Badge variant="outline" className="text-[10px] uppercase font-bold py-0 h-5 border-white/10 bg-white/5 text-muted-foreground">
                           {item.category}
                        </Badge>
+                       {!item.read && <Badge className="bg-primary text-white text-[8px] px-1 py-0 h-4">NEW</Badge>}
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">{item.message}</p>
                  </div>
