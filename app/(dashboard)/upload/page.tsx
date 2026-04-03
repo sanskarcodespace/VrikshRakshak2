@@ -9,9 +9,11 @@ import { Upload, Camera, CheckCircle2, AlertTriangle, ShieldCheck, Zap, Activity
 import { useNotificationStore } from "@/lib/store/notification-store";
 import gsap from "gsap";
 import { cn } from "@/lib/utils";
+import { SafeImage } from "@/components/ui/SafeImage";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<any>(null);
   const addNotification = useNotificationStore(state => state.addNotification);
@@ -65,7 +67,9 @@ export default function UploadPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      setPreviewUrl(URL.createObjectURL(selectedFile));
       setResult(null);
       setTimeout(startAnalysis, 100);
     }

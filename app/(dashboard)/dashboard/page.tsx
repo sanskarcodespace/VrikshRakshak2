@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 import { cn } from "@/lib/utils";
 import { 
   LineChart, 
@@ -35,6 +37,8 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { AvatarGroup } from "@/components/ui/AvatarGroup";
+import { Skeleton, DashboardSkeleton } from "@/components/ui/Skeleton";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 const data = [
   { name: "Jan", growth: 40, health: 80 },
@@ -46,6 +50,13 @@ const data = [
 ];
 
 export default function DashboardPage() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <DashboardContainer>
       {/* Header with quick stats summarized */}
@@ -67,68 +78,88 @@ export default function DashboardPage() {
       </div>
 
       {/* Modern KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {[
-          { label: "Total Planted", value: "12,482", icon: TreePine, color: "text-primary", bg: "bg-primary/10", trend: "+24 today" },
-          { label: "Survival Rate", value: "94.2%", icon: Heart, color: "text-rose-500", bg: "bg-rose-500/10", trend: "+0.4% month" },
-          { label: "Dead Trees", value: "142", icon: Skull, color: "text-zinc-500", bg: "bg-zinc-500/10", trend: "-12 from avg" },
-          { label: "Needs Attention", value: "28", icon: AlertTriangle, color: "text-amber-500", bg: "bg-amber-500/10", trend: "5 Critical" },
-          { label: "Reminders", value: "12", icon: Calendar, color: "text-cyan-500", bg: "bg-cyan-500/10", trend: "3 Overdue" }
-        ].map((kpi, i) => (
-          <Card key={i} className="p-5 glass border-white/10 hover-scale group relative overflow-hidden flex flex-col justify-between h-40">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <kpi.icon size={64} />
-            </div>
-            <div className="flex items-center justify-between relative z-10">
-              <div className={cn("p-2 rounded-xl", kpi.bg, kpi.color)}>
-                <kpi.icon size={20} />
-              </div>
-              <Badge variant="outline" className="text-[10px] glass border-white/5">{kpi.trend}</Badge>
-            </div>
-            <div className="space-y-1 relative z-10">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">{kpi.label}</p>
-              <h3 className="text-2xl font-bold tracking-tight">{kpi.value}</h3>
-            </div>
-          </Card>
-        ))}
-      </div>
+      <ErrorBoundary>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {isLoading ? (
+            Array(5).fill(0).map((_, i) => <Skeleton key={i} className="h-40" />)
+          ) : (
+            [
+              { label: "Total Planted", value: "12,482", icon: TreePine, color: "text-primary", bg: "bg-primary/10", trend: "+24 today" },
+              { label: "Survival Rate", value: "94.2%", icon: Heart, color: "text-rose-500", bg: "bg-rose-500/10", trend: "+0.4% month" },
+              { label: "Dead Trees", value: "142", icon: Skull, color: "text-zinc-500", bg: "bg-zinc-500/10", trend: "-12 from avg" },
+              { label: "Needs Attention", value: "28", icon: AlertTriangle, color: "text-amber-500", bg: "bg-amber-500/10", trend: "5 Critical" },
+              { label: "Reminders", value: "12", icon: Calendar, color: "text-cyan-500", bg: "bg-cyan-500/10", trend: "3 Overdue" }
+            ].map((kpi, i) => (
+              <Card key={i} className="p-5 glass border-white/10 hover-scale group relative overflow-hidden flex flex-col justify-between h-40">
+                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <kpi.icon size={64} />
+                </div>
+                <div className="flex items-center justify-between relative z-10">
+                  <div className={cn("p-2 rounded-xl", kpi.bg, kpi.color)}>
+                    <kpi.icon size={20} />
+                  </div>
+                  <Badge variant="outline" className="text-[10px] glass border-white/5">{kpi.trend}</Badge>
+                </div>
+                <div className="space-y-1 relative z-10">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">{kpi.label}</p>
+                  <h3 className="text-2xl font-bold tracking-tight">{kpi.value}</h3>
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
+      </ErrorBoundary>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Main Chart Section */}
-        <Card className="lg:col-span-8 p-8 glass border-white/10 space-y-6 min-h-[450px]">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <h3 className="text-xl font-bold tracking-tight">Growth & Health Telemetry</h3>
-              <p className="text-xs text-muted-foreground">Cumulative biomass increase vs. health index.</p>
-            </div>
-            <div className="flex gap-2">
-               <Badge className="bg-primary/20 text-primary border-primary/20">Growth</Badge>
-               <Badge className="bg-accent/20 text-accent border-accent/20">Health</Badge>
-            </div>
-          </div>
-          
-          <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data}>
-                <defs>
-                  <linearGradient id="colorGrowth" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'rgba(255,255,255,0.4)', fontSize: 12}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: 'rgba(255,255,255,0.4)', fontSize: 12}} />
-                <Tooltip 
-                  contentStyle={{backgroundColor: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px'}}
-                  itemStyle={{fontSize: '12px', fontWeight: 'bold'}}
-                />
-                <Area type="monotone" dataKey="growth" stroke="var(--primary)" fillOpacity={1} fill="url(#colorGrowth)" strokeWidth={3} />
-                <Line type="monotone" dataKey="health" stroke="var(--accent)" strokeWidth={3} dot={{r: 4, fill: 'var(--accent)'}} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
+        <ErrorBoundary>
+          <Card className="lg:col-span-8 p-8 glass border-white/10 space-y-6 min-h-[450px]">
+            {isLoading ? (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div className="space-y-2"><Skeleton className="h-6 w-48" /><Skeleton className="h-4 w-32" /></div>
+                  <div className="flex gap-2"><Skeleton className="h-6 w-16" /><Skeleton className="h-6 w-16" /></div>
+                </div>
+                <Skeleton className="h-[300px] w-full" />
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <h3 className="text-xl font-bold tracking-tight">Growth & Health Telemetry</h3>
+                    <p className="text-xs text-muted-foreground">Cumulative biomass increase vs. health index.</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Badge className="bg-primary/20 text-primary border-primary/20">Growth</Badge>
+                    <Badge className="bg-accent/20 text-accent border-accent/20">Health</Badge>
+                  </div>
+                </div>
+                
+                <div className="h-[350px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={data}>
+                      <defs>
+                        <linearGradient id="colorGrowth" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'rgba(255,255,255,0.4)', fontSize: 12}} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} tick={{fill: 'rgba(255,255,255,0.4)', fontSize: 12}} />
+                      <Tooltip 
+                        contentStyle={{backgroundColor: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px'}}
+                        itemStyle={{fontSize: '12px', fontWeight: 'bold'}}
+                      />
+                      <Area type="monotone" dataKey="growth" stroke="var(--primary)" fillOpacity={1} fill="url(#colorGrowth)" strokeWidth={3} />
+                      <Line type="monotone" dataKey="health" stroke="var(--accent)" strokeWidth={3} dot={{r: 4, fill: 'var(--accent)'}} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </>
+            )}
+          </Card>
+        </ErrorBoundary>
 
         {/* Sidebar Panel: Quick Actions & Today's Reminders */}
         <div className="lg:col-span-4 flex flex-col gap-6">

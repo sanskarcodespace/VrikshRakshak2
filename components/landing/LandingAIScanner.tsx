@@ -7,12 +7,14 @@ import { Badge } from "@/components/ui/Badge";
 import { Camera, Zap, CheckCircle2, AlertTriangle, ShieldCheck, RefreshCw, Sprout, TrendingUp, Droplets } from "lucide-react";
 import gsap from "gsap";
 import { cn } from "@/lib/utils";
+import { SafeImage } from "@/components/ui/SafeImage";
 
 export default function LandingAIScanner() {
   const [file, setFile] = useState<File | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<any>(null);
   const laserRef = useRef<HTMLDivElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const startScan = () => {
     setAnalyzing(true);
@@ -49,7 +51,9 @@ export default function LandingAIScanner() {
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      setPreviewUrl(URL.createObjectURL(selectedFile));
       setResult(null);
       // Auto-start analysis
       setTimeout(startScan, 100);
@@ -82,7 +86,11 @@ export default function LandingAIScanner() {
                   </label>
                 ) : (
                   <div className="w-full h-full relative">
-                     <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" alt="Tree" />
+                     <SafeImage 
+                        src={previewUrl || ""} 
+                        className="w-full h-full object-cover" 
+                        alt="Tree" 
+                     />
                      {analyzing && (
                         <div className="absolute inset-0 z-10">
                            <div ref={laserRef} className="absolute top-0 left-0 w-full h-1.5 bg-primary shadow-[0_0_20px_var(--primary)] z-20" />
