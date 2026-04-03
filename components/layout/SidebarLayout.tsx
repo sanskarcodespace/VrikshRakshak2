@@ -15,6 +15,7 @@ import {
   X
 } from "lucide-react";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
+import { PageTransition } from "./PageTransition";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
@@ -148,7 +149,9 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         <main className="flex-1 overflow-y-auto custom-scrollbar relative">
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
         </main>
       </div>
     </div>

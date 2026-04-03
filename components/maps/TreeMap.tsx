@@ -24,12 +24,31 @@ const Popup = dynamic(() => import("react-leaflet").then(mod => mod.Popup), { ss
 const MarkerClusterGroup = dynamic(() => import("react-leaflet-cluster"), { ssr: false });
 
 // Import hooks normally, but they will only be used inside the dynamically imported components
-import { useMapEvents } from "react-leaflet";
+import { useMapEvents, useMap } from "react-leaflet";
+
+// Heatmap logic component
+function HeatLayer({ points }: { points: [number, number, number][] }) {
+  const map = useMap();
+  useEffect(() => {
+    // @ts-ignore
+    if (!window.L || !window.L.heatLayer) return;
+    // @ts-ignore
+    const heat = window.L.heatLayer(points, {
+      radius: 25,
+      blur: 15,
+      maxZoom: 10,
+      gradient: { 0.4: 'blue', 0.65: 'lime', 1: 'red' }
+    }).addTo(map);
+    return () => { map.removeLayer(heat); };
+  }, [map, points]);
+  return null;
+}
 
 interface TreeMapProps {
   trees: any[];
   onSelectCoords?: (coords: { lat: number; lng: number }) => void;
   className?: string;
+  showHeat?: boolean;
 }
 
 function MapEvents({ onSelectCoords }: { onSelectCoords?: (coords: { lat: number; lng: number }) => void }) {
@@ -44,13 +63,22 @@ function MapEvents({ onSelectCoords }: { onSelectCoords?: (coords: { lat: number
   return null;
 }
 
-export function TreeMap({ trees, onSelectCoords, className }: TreeMapProps) {
+export function TreeMap({ trees, onSelectCoords, className, showHeat = false }: TreeMapProps) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
     fixLeafletIcons();
+    // Load Heatmap CSS/JS if not present
+    if (!document.getElementById('leaflet-heat')) {
+       const script = document.createElement('script');
+       script.id = 'leaflet-heat';
+       script.src = 'https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js';
+       document.head.appendChild(script);
+    }
   }, []);
+
+  const heatPoints = trees.map(t => [t.lat || t.coords?.lat, t.lng || t.coords?.lng, (100 - (t.health || 100)) / 100]) as [number, number, number][];
 
   if (!isMounted) return <div className={cn("bg-accent/5 rounded-3xl animate-pulse", className)} />;
 
@@ -72,20 +100,24 @@ export function TreeMap({ trees, onSelectCoords, className }: TreeMapProps) {
         
         {onSelectCoords && <MapEvents onSelectCoords={onSelectCoords} />}
 
-        {/* @ts-ignore */}
-        <MarkerClusterGroup chunkedLoading zoomToBoundsOnClick>
-          {trees.map((tree, i) => (
-            <Marker key={i} position={[tree.lat || tree.coords?.lat, tree.lng || tree.coords?.lng]}>
-               <Popup>
-                  <div className="p-2 space-y-1">
-                     <p className="font-bold text-sm">{tree.species || "Unknown Species"}</p>
-                     <p className="text-xs text-muted-foreground font-mono">{tree.id || "T-0000"}</p>
-                     <p className="text-[10px] uppercase font-bold text-primary">Health Index: {tree.health || 100}%</p>
-                  </div>
-               </Popup>
-            </Marker>
-          ))}
-        </MarkerClusterGroup>
+        {showHeat ? (
+          <HeatLayer points={heatPoints} />
+        ) : (
+          /* @ts-ignore */
+          <MarkerClusterGroup chunkedLoading zoomToBoundsOnClick>
+            {trees.map((tree, i) => (
+              <Marker key={i} position={[tree.lat || tree.coords?.lat, tree.lng || tree.coords?.lng]}>
+                 <Popup>
+                    <div className="p-2 space-y-1">
+                       <p className="font-bold text-sm">{tree.species || "Unknown Species"}</p>
+                       <p className="text-xs text-muted-foreground font-mono">{tree.id || "T-0000"}</p>
+                       <p className="text-[10px] uppercase font-bold text-primary">Health Index: {tree.health || 100}%</p>
+                    </div>
+                 </Popup>
+              </Marker>
+            ))}
+          </MarkerClusterGroup>
+        )}
       </MapContainer>
 
       {/* Decorative Overlays */}
