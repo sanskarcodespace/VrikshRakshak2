@@ -1,53 +1,62 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
 import { Trees } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
-export function PublicNavbar() {
+function Navbar() {
   return (
-    <nav className="h-20 flex items-center justify-between px-6 md:px-12 border-b bg-background/50 backdrop-blur-md fixed top-0 w-full z-50">
-      <Link href="/" className="flex items-center gap-2">
-        <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-primary-foreground">
-          <Trees size={24} />
+    <header className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
+      <nav className="max-w-7xl mx-auto glass rounded-2xl px-6 py-3 flex items-center justify-between border-white/10 shadow-glow">
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="w-8 h-8 bg-primary-gradient rounded-lg flex items-center justify-center shadow-glow group-hover:rotate-12 transition-transform duration-300">
+            <Trees size={18} className="text-white" />
+          </div>
+          <span className="font-bold text-xl tracking-tight bg-primary-gradient bg-clip-text text-transparent">VrikshRakshak</span>
+        </Link>
+        
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-foreground/70">
+          <Link href="#problem" className="hover:text-primary transition-colors">Problem</Link>
+          <Link href="#solution" className="hover:text-primary transition-colors">Solution</Link>
+          <Link href="#impact" className="hover:text-primary transition-colors">Impact</Link>
+          <Link href="#community" className="hover:text-primary transition-colors">Community</Link>
         </div>
-        <span className="font-bold text-2xl tracking-tight text-primary">VrikshRakshak</span>
-      </Link>
-      
-      <div className="hidden md:flex items-center gap-8 font-medium">
-        <Link href="#features" className="hover:text-primary transition-colors">Features</Link>
-        <Link href="#impact" className="hover:text-primary transition-colors">Impact</Link>
-        <Link href="#pricing" className="hover:text-primary transition-colors">Pricing</Link>
-      </div>
 
-      <div className="flex items-center gap-4">
-        <Link href="/login">
-          <Button variant="ghost">Login</Button>
-        </Link>
-        <Link href="/signup">
-          <Button className="rounded-2xl shadow-soft">Get Started</Button>
-        </Link>
-      </div>
-    </nav>
+        <div className="flex items-center gap-4">
+          <Link href="/login">
+            <Button variant="ghost" size="sm">Login</Button>
+          </Link>
+          <Link href="/signup">
+            <Button variant="primary" size="sm" className="rounded-xl shadow-glow">Join Us</Button>
+          </Link>
+        </div>
+      </nav>
+    </header>
   );
 }
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
+export default function PublicLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="min-h-screen bg-background">
-      <PublicNavbar />
-      <main className="pt-20">
-        {children}
-      </main>
-      <footer className="py-12 px-6 border-t bg-card mt-20">
-        <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Trees className="text-primary" />
-              <span className="font-bold text-xl">VrikshRakshak</span>
-            </div>
-            <p className="text-sm text-muted-foreground">Protecting our future, one tree at a time.</p>
+    <div className="min-h-screen bg-background selection:bg-primary/30">
+      <Navbar />
+      <main>{children}</main>
+      <footer className="py-12 px-6 border-t border-white/5 bg-card/30 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex items-center gap-2">
+            <Trees size={24} className="text-primary" />
+            <span className="font-bold text-xl tracking-tight">VrikshRakshak</span>
           </div>
-          {/* Footer links placeholders */}
+          <p className="text-sm text-muted-foreground">© 2026 VrikshRakshak AI. Monitoring 2.4M+ Trees globally.</p>
+          <div className="flex gap-6 text-sm text-muted-foreground">
+            <Link href="#" className="hover:text-primary">Privacy</Link>
+            <Link href="#" className="hover:text-primary">Terms</Link>
+            <Link href="#" className="hover:text-primary">Github</Link>
+          </div>
         </div>
       </footer>
     </div>
