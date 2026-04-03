@@ -10,10 +10,10 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", ...props }, ref) => {
     const variants = {
-      primary: "bg-primary text-primary-foreground hover:opacity-90 shadow-soft",
+      primary: "bg-primary-gradient text-primary-foreground hover:shadow-glow shadow-soft",
       secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-      outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-      ghost: "hover:bg-accent hover:text-accent-foreground",
+      outline: "border border-input bg-background/50 backdrop-blur-sm hover:bg-accent/10 hover:text-accent-foreground",
+      ghost: "hover:bg-accent/10 hover:text-accent-foreground",
       destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
     };
 
@@ -28,7 +28,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center rounded-xl font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 active:scale-95",
+          "inline-flex items-center justify-center rounded-xl font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover-scale",
           variants[variant],
           sizes[size],
           className

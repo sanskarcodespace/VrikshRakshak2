@@ -29,12 +29,12 @@ const navItems = [
 
 export function Sidebar({ className }: { className?: string }) {
   return (
-    <div className={cn("flex flex-col h-full bg-card border-r w-64 transition-all duration-300", className)}>
+    <div className={cn("flex flex-col h-full glass border-r w-64 transition-all duration-300", className)}>
       <div className="p-6 flex items-center gap-3">
-        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold">
+        <div className="w-10 h-10 bg-primary-gradient rounded-xl flex items-center justify-center text-primary-foreground font-bold shadow-glow">
           VR
         </div>
-        <span className="font-bold text-xl tracking-tight text-primary">VrikshRakshak</span>
+        <span className="font-bold text-xl tracking-tight text-foreground">VrikshRakshak</span>
       </div>
       
       <nav className="flex-1 px-4 space-y-1">
@@ -42,16 +42,16 @@ export function Sidebar({ className }: { className?: string }) {
           <Link
             key={item.name}
             href={item.href}
-            className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors group"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-accent/10 hover:text-accent transition-all group hover-scale"
           >
-            <item.icon size={20} className="group-hover:text-primary transition-colors" />
+            <item.icon size={20} className="group-hover:text-accent transition-colors" />
             {item.name}
           </Link>
         ))}
       </nav>
 
-      <div className="p-4 border-t">
-        <Button variant="ghost" className="w-full justify-start gap-3 rounded-xl text-muted-foreground">
+      <div className="p-6 border-t border-white/5">
+        <Button variant="ghost" className="w-full justify-start gap-3 rounded-xl text-muted-foreground hover:bg-rose-500/10 hover:text-rose-500">
           <LogOut size={20} />
           Logout
         </Button>
@@ -65,10 +65,14 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen bg-background overflow-hidden relative">
+      {/* Background Glows */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/10 blur-[120px] rounded-full pointer-events-none" />
+
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-background/60 backdrop-blur-md z-40 lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -81,27 +85,27 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
         <Sidebar />
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Top Navbar */}
-        <header className="h-16 flex items-center justify-between px-6 border-b bg-card/50 backdrop-blur-md sticky top-0 z-30">
+        <header className="h-16 flex items-center justify-between px-6 border-b border-white/5 glass sticky top-0 z-30">
           <button 
             onClick={() => setIsOpen(true)}
-            className="p-2 -ml-2 lg:hidden hover:bg-accent rounded-xl"
+            className="p-2 -ml-2 lg:hidden hover:bg-accent/10 rounded-xl"
           >
             <Menu size={24} />
           </button>
           
           <div className="flex-1 lg:pl-0 pl-4">
-            <h1 className="text-lg font-semibold truncate">Dashboard</h1>
+            <h1 className="text-lg font-bold tracking-tight text-foreground/80">CORE_SYSTEM::DASHBOARD</h1>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-xl">
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" />
+          <div className="flex items-center gap-6">
+            <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-xl hover:bg-accent/10 group">
+              <Bell size={20} className="group-hover:text-accent transition-colors" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-accent rounded-full animate-pulse shadow-glow-cyan" />
             </Button>
-            <div className="w-8 h-8 rounded-full bg-accent border overflow-hidden">
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" />
+            <div className="w-9 h-9 rounded-full border-2 border-accent/20 p-0.5 hover-scale cursor-pointer">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" className="rounded-full w-full h-full" />
             </div>
           </div>
         </header>
