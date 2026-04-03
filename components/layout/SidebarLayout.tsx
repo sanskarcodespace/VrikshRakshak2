@@ -14,6 +14,7 @@ import {
   Menu,
   X
 } from "lucide-react";
+import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
@@ -113,40 +114,41 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
         <Sidebar isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(!isCollapsed)} />
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        {/* Top Navbar */}
-        <header className="h-16 flex items-center justify-between px-6 border-b border-white/5 glass sticky top-0 z-30">
-          <button 
-            onClick={() => setIsOpen(true)}
-            className="p-2 -ml-2 lg:hidden hover:bg-accent/10 rounded-xl"
-          >
-            <Menu size={24} />
-          </button>
-          
-          <div className="flex-1 lg:pl-0 pl-4">
-             <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] opacity-50">CORE_PROTOCOL</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shadow-glow" />
-                <h1 className="text-sm font-bold tracking-widest text-foreground/80 uppercase">SYNAPS::TERMINAL</h1>
-             </div>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-xl hover:bg-accent/10 group">
-              <Bell size={20} className="group-hover:text-accent transition-colors" />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-accent rounded-full animate-pulse shadow-glow" />
-            </Button>
-            <div className="w-9 h-9 rounded-full border-2 border-accent/20 p-0.5 hover-scale cursor-pointer overflow-hidden">
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" className="w-full h-full object-cover" />
+      <div className="flex-1 flex flex-col min-w-0 bg-[#0a0a0a]">
+        {/* Header */}
+        <header className="h-20 border-b border-white/5 flex items-center justify-between px-8 bg-black/20 backdrop-blur-md sticky top-0 z-40">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsOpen(true)}
+              className="p-2 -ml-2 lg:hidden hover:bg-accent/10 rounded-xl"
+            >
+              <Menu size={24} />
+            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] opacity-50">CORE_PROTOCOL</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shadow-glow" />
+              <h1 className="text-sm font-bold tracking-widest text-foreground/80 uppercase">SYNAPS::TERMINAL</h1>
             </div>
+          </div>
+          <div className="flex items-center gap-6">
+             <NotificationCenter />
+             <div className="h-8 w-[1px] bg-white/10 mx-2 hidden sm:block" />
+             <div className="flex items-center gap-3 cursor-pointer group">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent p-[1px]">
+                   <div className="w-full h-full rounded-xl bg-[#0a0a0a] flex items-center justify-center overflow-hidden">
+                      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" className="w-8 h-8" />
+                   </div>
+                </div>
+                <div className="hidden sm:block">
+                   <p className="text-xs font-bold">Felix Vance</p>
+                   <p className="text-[10px] text-muted-foreground font-mono">Bio_Admin :: Lvl 4</p>
+                </div>
+             </div>
           </div>
         </header>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 custom-scrollbar">
-          <div className="max-w-[1600px] mx-auto space-y-8">
-            {children}
-          </div>
+        <main className="flex-1 overflow-y-auto custom-scrollbar relative">
+          {children}
         </main>
       </div>
     </div>
