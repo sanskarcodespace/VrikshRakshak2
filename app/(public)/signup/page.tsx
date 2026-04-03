@@ -18,18 +18,35 @@ export default function SignupPage() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
+    try {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === "!YOUR_SUPABASE_URL") {
+        console.warn("Supabase keys missing. Simulating REGISTRATION_SUCCESS.");
+        setTimeout(() => {
+          alert("REGISTRATION_PROTOCOL_ACTIVE: Redirecting to Access Terminal.");
+          window.location.href = "/login";
+        }, 2000);
+        return;
+      }
+
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
         },
-      },
-    });
-    if (error) alert(error.message);
-    else alert("Check your email for the confirmation link!");
-    setLoading(false);
+      });
+      if (error) {
+        alert("REGISTRATION_FAILURE: " + error.message);
+      } else {
+        alert("IDENTITY_PENDING: Check your email for verification pulse.");
+      }
+    } catch (err: any) {
+      alert("SYSTEM_CRITICAL: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -5,7 +5,7 @@ import { DashboardContainer } from "@/components/layout/DashboardContainer";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { Upload, Camera, CheckCircle2, AlertTriangle, ShieldCheck, Zap, Activity } from "lucide-react";
+import { Upload, Camera, CheckCircle2, AlertTriangle, ShieldCheck, Zap, Activity, Sprout, TrendingUp, Droplets } from "lucide-react";
 import { useNotificationStore } from "@/lib/store/notification-store";
 import gsap from "gsap";
 import { cn } from "@/lib/utils";
@@ -19,49 +19,56 @@ export default function UploadPage() {
   const scanRef = useRef<HTMLDivElement>(null);
   const laserRef = useRef<HTMLDivElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      setFile(e.target.files[0]);
-      setResult(null);
-    }
-  };
-
   const startAnalysis = () => {
     setAnalyzing(true);
     
     // Animation
-    gsap.to(laserRef.current, {
-      top: "100%",
-      duration: 2,
-      repeat: 3,
-      yoyo: true,
-      ease: "power2.inOut",
-    });
+    if (laserRef.current) {
+        gsap.to(laserRef.current, {
+          top: "100%",
+          duration: 2,
+          repeat: 3,
+          yoyo: true,
+          ease: "power2.inOut",
+        });
+    }
 
     // Mock AI Logic
     setTimeout(() => {
       const isHealthy = Math.random() > 0.4;
-      const confidence = 85 + Math.random() * 10;
+      const types = [
+        { status: "THIRSTY", diag: "Vascular cavitation risk detected.", recs: ["Drip irrigation +20L", "Surface mulching"] },
+        { status: "STRESSED", diag: "Thermal threshold exceeded. Chlorophyll decay.", recs: ["Shade cloth deployment", "Mist cooling sync"] },
+        { status: "RECOVERING", diag: "New growth nodes emerging in upper canopy.", recs: ["Continue nitrogen cycle", "Monitor sap flow"] }
+      ];
       
-      const newResult = {
-         status: isHealthy ? "HEALTHY" : "CRITICAL_STRESS",
-         diagnosis: isHealthy ? "Optimal chlorophyll levels detected." : "Early signs of leaf wilt and dehydration.",
-         confidence: confidence.toFixed(1),
-         id: "T-" + Math.floor(1000 + Math.random() * 9000)
-      };
-      
-      setResult(newResult);
+      const stressType = types[Math.floor(Math.random() * types.length)];
+      setResult({
+        status: isHealthy ? "HEALTHY" : stressType.status,
+        diagnosis: isHealthy ? "Optimal homeostasis. Neural grid sync complete." : stressType.diag,
+        confidence: (85 + Math.random() * 10).toFixed(1),
+        id: "T-" + Math.floor(1000 + Math.random() * 9000),
+        recommendations: isHealthy ? ["Bi-weekly monitoring", "Next sync T-minus 7d"] : stressType.recs,
+        recovery: isHealthy ? 100 : (70 + Math.random() * 20).toFixed(0)
+      });
       setAnalyzing(false);
       
       // Trigger Notification
       addNotification({
         type: isHealthy ? "SUCCESS" : "CRITICAL",
-        title: isHealthy ? "Diagnostic Complete" : "Health Alert Triggered",
+        title: "Diagnostic Complete",
         category: "Field Intelligence",
-        message: `Specimen ${newResult.id} analysis: ${newResult.diagnosis} (Confidence: ${newResult.confidence}%)`
+        message: `Specimen ${isHealthy ? "T-8XX" : "T-WARN"} analysis: ${isHealthy ? "Optimal" : stressType.status}. Recovery Prob: ${isHealthy ? 100 : 75}%`
       });
-
     }, 6000);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      setFile(e.target.files[0]);
+      setResult(null);
+      setTimeout(startAnalysis, 100);
+    }
   };
 
   return (
@@ -180,19 +187,36 @@ export default function UploadPage() {
                              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">AI_Observation</p>
                              <p className="text-sm leading-relaxed italic">"{result.diagnosis}"</p>
                           </div>
-                          <div className="flex items-center justify-between pt-4 border-t border-white/5">
+
+                          <div className="space-y-3 pt-4 border-t border-white/5">
+                             <p className="text-xs font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                                <Sprout size={14} /> Recovery_Protocol
+                             </p>
+                             <div className="space-y-2">
+                                {result.recommendations.map((rec: string, i: number) => (
+                                   <div key={i} className="flex items-center gap-2 p-3 rounded-xl bg-white/10 border border-white/5 text-xs">
+                                      <Droplets size={12} className="text-primary" />
+                                      <span>{rec}</span>
+                                   </div>
+                                ))}
+                             </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
                              <div className="space-y-1">
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase">Confidence</p>
                                 <p className="text-xl font-bold text-primary">{result.confidence}%</p>
                              </div>
                              <div className="space-y-1 text-right">
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase">Specimen_ID</p>
-                                <p className="text-xl font-bold">{result.id}</p>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase text-nowrap">Recovery Chance</p>
+                                <p className="text-xl font-bold flex items-center justify-end gap-1">
+                                   {result.recovery}% <TrendingUp size={14} className="text-eco-green" />
+                                </p>
                              </div>
                           </div>
                        </div>
 
-                       <Button variant="outline" className="w-full rounded-xl glass py-6" onClick={() => setFile(null)}>
+                       <Button variant="outline" className="w-full rounded-xl glass py-6 text-xs font-bold uppercase tracking-widest" onClick={() => setFile(null)}>
                           RESET_DIAGNOSTIC_TERMINAL
                        </Button>
                     </div>

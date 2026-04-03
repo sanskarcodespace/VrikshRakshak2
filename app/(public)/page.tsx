@@ -5,6 +5,7 @@ import Hero3D from "@/components/landing/Hero3D";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { Trees, ShieldCheck, Activity, Globe, Zap, Users, GraduationCap, Heart } from "lucide-react";
+import LandingAIScanner from "@/components/landing/LandingAIScanner";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import gsap from "gsap";
@@ -57,8 +58,9 @@ export default function LandingPage() {
           <Badge variant="outline" className="py-2 px-4 glass border-primary/20 text-primary animate-pulse-slow">
             SYSTEM_v4.0 :: GLOBAL_TREE_PROTOCOL_ACTIVE
           </Badge>
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter">
-            The Future of <span className="bg-primary-gradient bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(139,92,246,0.3)]">Ecosystem Intelligence</span>
+          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-tight">
+            <span className="drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">The Future of</span> <br className="md:hidden" />
+            <span className="bg-primary-gradient bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(16,185,129,0.5)]">Ecosystem Intelligence</span>
           </h1>
           <p className="text-xl text-muted-foreground/80 max-w-2xl mx-auto font-medium">
             AI-driven reforestation monitoring, health diagnostic telemetry, and geo-spatial impact tracking for a greener planet.
@@ -104,6 +106,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Public AI Scanner Section */}
+      <LandingAIScanner />
 
       {/* Solution Section */}
       <section id="solution" className="py-32 px-6 relative z-10 bg-primary/5">

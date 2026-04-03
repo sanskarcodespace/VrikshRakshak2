@@ -27,13 +27,13 @@ function AnimatedSphere() {
     <Float speed={2} rotationIntensity={1} floatIntensity={1}>
       <Sphere ref={meshRef} args={[1, 100, 100]} scale={2}>
         <MeshDistortMaterial
-          color="#4F46E5"
+          color="#10B981"
           attach="material"
           distort={0.4}
           speed={2}
           roughness={0}
-          emissive="#7C3AED"
-          emissiveIntensity={0.5}
+          emissive="#34D399"
+          emissiveIntensity={0.6}
         />
       </Sphere>
     </Float>
@@ -70,9 +70,9 @@ function Particles({ count = 2000 }) {
       </bufferGeometry>
       <pointsMaterial
         size={0.015}
-        color="#06B6D4"
+        color="#34D399"
         transparent
-        opacity={0.6}
+        opacity={0.4}
         sizeAttenuation={true}
       />
     </points>

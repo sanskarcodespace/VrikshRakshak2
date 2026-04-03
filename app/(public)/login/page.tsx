@@ -17,22 +17,47 @@ export default function LoginPage() {
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) alert(error.message);
-    else window.location.href = "/dashboard";
-    setLoading(false);
+    try {
+      // Demo Bypass for quick testing if keys are missing
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === "!YOUR_SUPABASE_URL") {
+        console.warn("Supabase keys missing. Initializing DEMO_SESSION.");
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 1500);
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) {
+        alert("AUTH_ERROR: " + error.message);
+      } else {
+        window.location.href = "/dashboard";
+      }
+    } catch (err: any) {
+      alert("SYSTEM_EXCEPTION: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
+    try {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+         alert("External Identity Provider unavailable in current node config.");
+         return;
+      }
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+    } catch (err: any) {
+      alert("EXTERNAL_AUTH_FAILURE: " + err.message);
+    }
   };
 
   return (
